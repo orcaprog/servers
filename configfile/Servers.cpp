@@ -6,7 +6,7 @@
 /*   By: abouassi <abouassi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 17:43:44 by abouassi          #+#    #+#             */
-/*   Updated: 2024/01/08 09:25:46 by abouassi         ###   ########.fr       */
+/*   Updated: 2024/01/22 20:22:29 by abouassi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,14 @@
 Location &Servers::getLocation(std::string path)
 {
     size_t i;
-    for (i = 0; i < loactions.size(); i++)
+    for (i = 0; i < locations.size(); i++)
     {
-        if (loactions[i].path[0] == path)
+        if (locations[i].path[0] == path)
         {
-            return loactions[i];
+            return locations[i];
         }
     }
-    return loactions[i];
+    return locations[i];
 }
 
 void Servers::ParceServers()
@@ -366,9 +366,9 @@ void Servers::SetAllDir()
     SetClient_max_body_size();
 
     size_t i = 0;
-    while (i < loactions.size())
+    while (i < locations.size())
     {
-        loactions[i].SetAllDir();
+        locations[i].SetAllDir();
         i++;
     }
 }
@@ -376,33 +376,33 @@ void Servers::SetAllDir()
 /*_________________________GET_________________________________*/
 /*_____________________________________________________________*/
 
-const std::vector<int> &Servers::GetPorts()
+const int & Servers::GetPorts()
 {
-    return port;
+    return port[0];
 }
-const std::vector<std::string> &Servers::GetServerName()
+const std::string &Servers::GetServerName()
 {
-    return server_name;
+    return server_name[0];
 }
-const std::vector<std::string> &Servers::GetHost()
+const std::string &Servers::GetHost()
 {
-    return host;
+    return host[0];
 }
-const std::vector<std::string> &Servers::GetRoot()
+const std::string &Servers::GetRoot()
 {
-    return root;
+    return root[0];
 }
 const std::vector<std::vector<std::string> > &Servers::GetError_page()
 {
     return error_page;
 }
-const std::vector<long long int> &Servers::GetClient_max_body_size()
+const long long int &Servers::GetClient_max_body_size()
 {
-    return client_max_body_size;
+    return client_max_body_size[0];
 }
-const std::vector<std::string> &Servers::GetIndex()
+const std::string &Servers::GetIndex()
 {
-    return index;
+    return index[0];
 }
 
 /*=======================================================================*/
@@ -443,7 +443,7 @@ void Servers::FillLocation()
     }
     while (index < servconf.size())
     {
-        loactions.push_back(FirstFill(index));
+        locations.push_back(FirstFill(index));
     }
 }
 /*=======================================================================*/
@@ -528,18 +528,18 @@ void Servers::desplay()
 {
     // std::vector<std::vector<std::string> > matrix = servconf;
 
-    Print_dirs(GetPorts().begin(), GetPorts().end(), "Ports");
-    Print_dirs(GetServerName().begin(), GetServerName().end(), "Server_name");
-    Print_dirs(GetHost().begin(), GetHost().end(), "Host");
-    Print_dirs(GetRoot().begin(), GetRoot().end(), "Root");
+    cout<<"Ports :"<<GetPorts()<<endl;
+    cout<<"ServerName  :"<<GetServerName()<<endl;
+    cout<<"Host :"<<GetHost()<<endl;
+    cout<<"Root :"<<GetRoot()<<endl;
     Printtwodom(GetError_page(), "Error_page");
-    Print_dirs(GetClient_max_body_size().begin(), GetClient_max_body_size().end(), "Client_max_body_size");
-    Print_dirs(GetIndex().begin(), GetIndex().end(), "Index");
+    cout<<"Client_max_body_size :"<<endl;
+    cout<<"Index :"<<GetIndex()<<endl;
     size_t i = 0;
-    while (i < loactions.size())
+    while (i < locations.size())
     {
         std::cout << "________________________\n";
-        loactions[i].desplayLocation();
+        locations[i].desplayLocation();
         i++;
     }
 }
@@ -627,10 +627,10 @@ void Servers::SetDefaultError()
 int Servers::searchPathLocation(string &uri)
 {
     size_t pos;
-    for (size_t i = 0; i < loactions.size(); i++)
+    for (size_t i = 0; i < locations.size(); i++)
     {
-        pos = uri.find(loactions[i].path[0]);
-        if (pos != string::npos && pos == 0 && loactions[i].path[0] != "/")
+        pos = uri.find(locations[i].path[0]);
+        if (pos != string::npos && pos == 0 && locations[i].path[0] != "/")
         {
             return i;
         }
@@ -642,10 +642,10 @@ void Servers::fillFromLocation(int &in, string &uri)
 {
     // size_t pos;
 
-    if (loactions[in].root[0].empty())
+    if (locations[in].root[0].empty())
     {
         rootUri = uri;
-        rootUri.replace(0, loactions[in].path[0].length(), root[0]);
+        rootUri.replace(0, locations[in].path[0].length(), root[0]);
         if (!pathExists(rootUri))
         {
             // throw "Erorr in " + rootUri + ": no such file or directory";
@@ -656,16 +656,16 @@ void Servers::fillFromLocation(int &in, string &uri)
     else
     {
         rootUri = uri;
-        rootUri.replace(0, loactions[in].path[0].length(), loactions[in].root[0]);
+        rootUri.replace(0, locations[in].path[0].length(), locations[in].root[0]);
         if (pathIsFile(rootUri) != 2)
         {
-            if (loactions[in].index[0].empty())
+            if (locations[in].index[0].empty())
             {
                 rootUri += ("/" + index[0]);
             }
             else
             {
-                rootUri += ("/" + loactions[in].index[0]);
+                rootUri += ("/" + locations[in].index[0]);
             }
         }
         if (!pathExists(rootUri))

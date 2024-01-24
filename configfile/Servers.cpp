@@ -6,23 +6,23 @@
 /*   By: abouassi <abouassi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 17:43:44 by abouassi          #+#    #+#             */
-/*   Updated: 2024/01/22 20:22:29 by abouassi         ###   ########.fr       */
+/*   Updated: 2024/01/23 19:12:20 by abouassi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Servers.hpp"
 
-Location &Servers::getLocation(std::string path)
+int  Servers::getLocation(std::string path)
 {
     size_t i;
     for (i = 0; i < locations.size(); i++)
     {
         if (locations[i].path[0] == path)
         {
-            return locations[i];
+            return i;
         }
     }
-    return locations[i];
+    return -1;
 }
 
 void Servers::ParceServers()
@@ -638,7 +638,7 @@ int Servers::searchPathLocation(string &uri)
     return -1;
 }
 
-void Servers::fillFromLocation(int &in, string &uri)
+int  Servers::fillFromLocation(int &in, string &uri)
 {
     // size_t pos;
 
@@ -650,7 +650,7 @@ void Servers::fillFromLocation(int &in, string &uri)
         {
             // throw "Erorr in " + rootUri + ": no such file or directory";
             cout << "Erorr in " + rootUri + ": no such file or directory" << endl;
-            return;
+            return 0;
         }
     }
     else
@@ -672,29 +672,38 @@ void Servers::fillFromLocation(int &in, string &uri)
         {
             // throw "Erorr in " + rootUri + ": no such file or directory";
             cout << "Erorr in " + rootUri + ": no such file or directory" << endl;
-            return;
+            return 0;
         }
         
     }
+    return 1;
 }
+
 void Servers::FillData(string uri)
 {
     int in = searchPathLocation(uri);
+    Is_cgi = false;
     string LocationIndex;
     if (in == -1)
     {
         rootUri = root[0] + uri;
         if (pathIsFile(rootUri) != 2)
         {
-            LocationIndex = getLocation("/").index[0];
-            if (LocationIndex.empty())
+            int k = getLocation("/");
+            if (k != -1)
             {
-                rootUri += ("/" + index[0]);
+                std::cout<<"K :"<<k<<endl;
+                LocationIndex = locations[k].index[0];
+                if (!locations[k].root[0].empty())
+                    rootUri = locations[k].root[0] + uri;
+                if (LocationIndex.empty())
+                    rootUri += ("/" + index[0]);
+                else
+                    rootUri += ("/" + LocationIndex);
+                UriLocation = locations[k];
             }
             else
-            {
-                rootUri += ("/" + LocationIndex);
-            }
+                rootUri += ("/" + index[0]);
         }
         if (!pathExists(rootUri))
         {
@@ -702,10 +711,20 @@ void Servers::FillData(string uri)
             cout << "Erorr in " + rootUri + ": no such file or directory" << endl;
             return;
         }
+        
     }
     else
     {
-        fillFromLocation(in, uri);
+            std::cout<<"Path of location :"<<locations[in].GetPath()<<endl;
+        if(fillFromLocation(in, uri))
+        {
+            UriLocation = locations[in];
+            if (locations[in].GetPath() == "/cgi")
+            {
+                Is_cgi = true;
+            }
+            
+        }
     }
 }
 

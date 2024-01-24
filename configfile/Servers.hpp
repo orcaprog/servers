@@ -6,7 +6,7 @@
 /*   By: abouassi <abouassi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 17:42:27 by abouassi          #+#    #+#             */
-/*   Updated: 2024/01/22 20:22:10 by abouassi         ###   ########.fr       */
+/*   Updated: 2024/01/23 18:53:55 by abouassi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,16 +102,19 @@ public:
     const long long int  &  GetClient_max_body_size(); 
     const std::string & GetIndex(); 
 
-    Location & getLocation(std::string path);
+    int getLocation(std::string path);
     void SetDefaultError();
     void CreatSocketServer();
     Servers();
 
     /*====================================*/
     int searchPathLocation(string & uri);
-    void fillFromLocation(int & index,string & uri);
+    int fillFromLocation(int & index,string & uri);
     void FillData(string  uri);
     string rootUri;
+    bool Is_cgi;
+    void checkIsCgi(string uri);
+    Location UriLocation;
     /*====================================*/
     void FillLocation();
 

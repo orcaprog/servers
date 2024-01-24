@@ -6,7 +6,7 @@
 /*   By: abouassi <abouassi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 18:04:44 by abouassi          #+#    #+#             */
-/*   Updated: 2024/01/23 10:06:53 by abouassi         ###   ########.fr       */
+/*   Updated: 2024/01/23 19:02:42 by abouassi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,7 @@ void Multiplexing::In_Events(int n)
             mClients[events[n].data.fd].second.process_req(string("").append(buffer, bytesRead),bytesRead,EPOLLIN);
             mClients[events[n].data.fd].first.FillData(mClients[events[n].data.fd].second.r_path);
             cout<<"rootUri :"<<mClients[events[n].data.fd].first.rootUri<<endl;
+            cout<<"is_cgi :"<<mClients[events[n].data.fd].first.Is_cgi<<endl;
 
 
             // if (mClients[events[n].data.fd].second.r_path == "/favicon.ico")

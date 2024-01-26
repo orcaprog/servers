@@ -6,7 +6,7 @@
 /*   By: abouassi <abouassi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 18:04:44 by abouassi          #+#    #+#             */
-/*   Updated: 2024/01/24 18:08:16 by abouassi         ###   ########.fr       */
+/*   Updated: 2024/01/26 10:03:47 by abouassi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,10 +135,16 @@ void Multiplexing::In_Events(int n)
             mClients[events[n].data.fd].first.FillData(mClients[events[n].data.fd].second.r_path);
             cout<<"rootUri :"<<mClients[events[n].data.fd].first.rootUri<<endl;
             cout<<"is_cgi :"<<mClients[events[n].data.fd].first.Is_cgi<<endl;
+            cout<<"querys :"<<mClients[events[n].data.fd].first.querys<<endl;
 
-            cout<<"===============================================\n";
+            cout<<"      ========\n";
+            cout<<"        ===\n";
+            cout<<"         =\n";
             mClients[events[n].data.fd].first.UriLocation.desplayLocation();
-            cout<<"===============================================\n";
+            cout<<"         =\n";
+            cout<<"        ===\n";
+            cout<<"      ========\n";
+            
             // if (mClients[events[n].data.fd].second.r_path == "/favicon.ico")
             // {
             //     epoll_ctl(epollfd,EPOLL_CTL_DEL,events[n].data.fd,&ev);
@@ -173,7 +179,7 @@ void Multiplexing::Connect_And_Add(int n)
         }
 
         mClients[conn_sock].first = iter->second;
-        Request req(mClients[conn_sock].first.root[0]);
+        Request req(mClients[conn_sock].first);
         mClients[conn_sock].second = req;
         std::cout<<"Fd Server :"<<iter->first<<std::endl;
         ev.events = EPOLLIN | EPOLLOUT;

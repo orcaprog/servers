@@ -6,7 +6,7 @@
 /*   By: abouassi <abouassi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 17:54:31 by abouassi          #+#    #+#             */
-/*   Updated: 2024/01/24 17:24:41 by abouassi         ###   ########.fr       */
+/*   Updated: 2024/01/26 11:02:48 by abouassi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ std::vector<std::string> ParceConf::Split_line(std::string line)
     std::string chunks;
     while (std::getline(ss, chunks, ' '))
     {
-        if (!chunks.empty())
+        if (!chunks.empty() )
             vline.push_back(chunks);
     }
     return vline;
@@ -32,12 +32,14 @@ void ParceConf::TakeAndParce(std::string confgfile)
     std::ifstream configfile;
     std::string line;
     std::vector<std::string> _split;
+    std::vector<string>::iterator iterfind;
     configfile.open(confgfile.c_str(), std::ios::in);
     if (configfile.is_open())
     {
         while (getline(configfile, line))
         {
-            if (!line.empty())
+            
+            if (!line.empty() )
             {
                 _split = Split_line(line);
                 if (!_split.empty())

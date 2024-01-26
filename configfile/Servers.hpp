@@ -6,7 +6,7 @@
 /*   By: abouassi <abouassi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 17:42:27 by abouassi          #+#    #+#             */
-/*   Updated: 2024/01/23 18:53:55 by abouassi         ###   ########.fr       */
+/*   Updated: 2024/01/26 15:25:15 by abouassi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,12 +61,7 @@ private:
     void SetClient_max_body_size(); // done ~
     void SetIndex(); // done ~
     
-    void ParceServers();    
-    
     void Printtwodom(const std::vector<std::vector<std::string> > & matrix,std::string data);
-
-
-
     void ReplacePath(std::string status,std::string path);
 
 public:
@@ -77,7 +72,7 @@ public:
     std::vector<std::string> root;
     std::vector<std::string> index;
     std::vector<long long int > client_max_body_size;
-    std::vector<std::vector<std::string> > error_page;
+    map<string,string> error_page;
     std::vector<std::string> s_erorr;
 
 
@@ -106,7 +101,7 @@ public:
     void SetDefaultError();
     void CreatSocketServer();
     Servers();
-
+    void SetIndex_Of();
     /*====================================*/
     int searchPathLocation(string & uri);
     int fillFromLocation(int & index,string & uri);
@@ -114,6 +109,7 @@ public:
     string rootUri;
     bool Is_cgi;
     void checkIsCgi(string uri);
+    string querys;
     Location UriLocation;
     /*====================================*/
     void FillLocation();

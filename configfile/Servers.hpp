@@ -6,7 +6,7 @@
 /*   By: abouassi <abouassi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 17:42:27 by abouassi          #+#    #+#             */
-/*   Updated: 2024/01/26 15:25:15 by abouassi         ###   ########.fr       */
+/*   Updated: 2024/01/26 18:14:06 by abouassi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@
 #include <sys/stat.h>
 #include "Location.hpp"
 #include <stack>
+#include <dirent.h>
+#include <iostream>
+#include<cstring>
 
 class Servers
 {
@@ -101,7 +104,7 @@ public:
     void SetDefaultError();
     void CreatSocketServer();
     Servers();
-    void SetIndex_Of();
+    void SetIndex_Of(string path);
     /*====================================*/
     int searchPathLocation(string & uri);
     int fillFromLocation(int & index,string & uri);

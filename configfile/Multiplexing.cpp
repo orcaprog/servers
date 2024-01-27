@@ -6,7 +6,7 @@
 /*   By: abouassi <abouassi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 18:04:44 by abouassi          #+#    #+#             */
-/*   Updated: 2024/01/26 10:03:47 by abouassi         ###   ########.fr       */
+/*   Updated: 2024/01/27 16:40:23 by abouassi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,18 +132,8 @@ void Multiplexing::In_Events(int n)
         {
             
             mClients[events[n].data.fd].second.process_req(string("").append(buffer, bytesRead),bytesRead,EPOLLIN);
-            mClients[events[n].data.fd].first.FillData(mClients[events[n].data.fd].second.r_path);
-            cout<<"rootUri :"<<mClients[events[n].data.fd].first.rootUri<<endl;
-            cout<<"is_cgi :"<<mClients[events[n].data.fd].first.Is_cgi<<endl;
-            cout<<"querys :"<<mClients[events[n].data.fd].first.querys<<endl;
+            // mClients[events[n].data.fd].first.FillData(mClients[events[n].data.fd].second.r_path);
 
-            cout<<"      ========\n";
-            cout<<"        ===\n";
-            cout<<"         =\n";
-            mClients[events[n].data.fd].first.UriLocation.desplayLocation();
-            cout<<"         =\n";
-            cout<<"        ===\n";
-            cout<<"      ========\n";
             
             // if (mClients[events[n].data.fd].second.r_path == "/favicon.ico")
             // {

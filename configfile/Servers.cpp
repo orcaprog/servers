@@ -6,7 +6,7 @@
 /*   By: abouassi <abouassi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 17:43:44 by abouassi          #+#    #+#             */
-/*   Updated: 2024/01/26 16:07:51 by abouassi         ###   ########.fr       */
+/*   Updated: 2024/01/27 17:52:38 by abouassi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -317,6 +317,7 @@ void Servers::SetAllDir()
     size_t i = 0;
     while (i < locations.size())
     {
+        locations[i].SetIndexRoot(root[0],index[0]);
         locations[i].SetAllDir();
         i++;
     }
@@ -534,12 +535,22 @@ void Servers::CreatSocketServer()
     }
 }
 /*#############################################################*/
-void Servers::SetIndex_Of()
+void Servers::SetIndex_Of(string path)
 {
     std::ofstream index_Of;
     std::string line;
     std::vector<std::string> _split;
     std::vector<string>::iterator iterfind;
+
+    
+    struct dirent *entry;
+    DIR *dir = opendir(path.c_str());
+    if (dir == NULL) {
+        perror("Error opening directory");
+        return ;
+    }
+
+    
     index_Of.open("index_of.html", std::ios::out);
     if (index_Of.is_open())
     {
@@ -550,10 +561,22 @@ void Servers::SetIndex_Of()
         index_Of << "<body>" << endl;
         index_Of << "    <h1>Index of /</h1>" << endl;
         index_Of << "    <hr>" << endl;
-        index_Of << "    <pre><a href=\"../\">../</a>" << endl;
-        index_Of << "    <a href=\"cgi/\">cgi/</a>" << endl;
-        index_Of << "    <a href=\"tst/\">tst/</a>" << endl;
-        index_Of << "    <a href=\"upload/\">upload/</a>" << endl;
+        index_Of << "    <pre>" << endl;
+
+        while ((entry = readdir(dir)) != NULL) 
+        {
+            if (std::strcmp(entry->d_name  , "."))
+            {
+                if (entry->d_type == DT_DIR)
+                {
+                    index_Of << "    <a href=\""+ string(entry->d_name) +"/\">"+ string(entry->d_name) +"/</a>" << endl;
+                }
+                else
+                    index_Of << "    <a href=\""+ string(entry->d_name) +"\">"+ string(entry->d_name) +"</a>" << endl;
+                
+            }
+            
+        }
         index_Of << "    </pre>" << endl;
         index_Of << "    <hr>" << endl;
         index_Of << "</body>" << endl;
@@ -589,48 +612,29 @@ int Servers::searchPathLocation(string &uri)
 
 int  Servers::fillFromLocation(int &in, string &uri)
 {
-
-    if (locations[in].root[0].empty())
-    {
-        rootUri = uri;
-        rootUri.replace(0, locations[in].path[0].length(), root[0]);
-        if (pathIsFile(rootUri) == 3)
-        {
-            if (locations[in].index[0].empty())
-            {
-                rootUri += ("/" + index[0]);
-            }
-            else
-            {
-                rootUri += ("/" + locations[in].index[0]);
-            }
-        }
-        if (!pathExists(rootUri))
-        {
-            rootUri = error_page["404"];
-        }
-    }
-    else
-    {
         rootUri = uri;
         rootUri.replace(0, locations[in].path[0].length(), locations[in].root[0]);
         if (pathIsFile(rootUri) == 3)
         {
-            if (locations[in].index[0].empty())
+            rootUri += ("/" + locations[in].index[0]);
+            cout<<"from location :\n\n"<<rootUri<<endl<<endl;
+            if (!pathExists(rootUri))
             {
-                rootUri += ("/" + index[0]);
-            }
-            else
-            {
-                rootUri += ("/" + locations[in].index[0]);
-            }
+                if (locations[in].autoindex)
+                {
+                    SetIndex_Of(root[0]);
+                    rootUri = "index_of.html";
+                }
+                else
+                    rootUri = error_page["404"];
+                return 0;
+            }        
         }
-        if (!pathExists(rootUri))
+        else if (!pathExists(rootUri))
         {
             rootUri = error_page["404"];
+            return 0;
         }
-        
-    }
     return 1;
 }
 
@@ -651,33 +655,31 @@ void Servers::FillData(string uri)
     int in = searchPathLocation(uri);
     Is_cgi = false;
     int def = 0;
-    string LocationIndex;
     if (in == -1)
     {
-
         def = getLocation("/");
         if (def != -1)
         {
-            if (locations[def].root[0].empty())
-            {
-                rootUri = root[0] + uri;
-            }
-            else 
-                rootUri = locations[def].root[0] + uri;
-
+            rootUri = locations[def].root[0] + uri;
             if (pathIsFile(rootUri) == 3)
             {
-                LocationIndex = locations[def].index[0];
-                if (LocationIndex.empty())
-                    rootUri += ("/" + index[0]);
-                else
-                    rootUri += ("/" + LocationIndex);
+                rootUri += ("/" + locations[def].index[0]);
+                if (!pathExists(rootUri))
+                {
+                    if (locations[def].autoindex)
+                    {
+                        SetIndex_Of(root[0]);
+                        rootUri = "index_of.html";
+                    }
+                    else
+                        rootUri = error_page["404"];
+                }
             }
-            UriLocation = locations[def];
-            if (!pathExists(rootUri))
+            else if (!pathExists(rootUri))
             {
                 rootUri = error_page["404"];
             }
+            UriLocation = locations[def];
         }
         else
         {
@@ -693,17 +695,23 @@ void Servers::FillData(string uri)
     else
     {
         std::cout<<"Path of location :"<<locations[in].GetPath()<<endl;
-        // if()
-        // {
-            fillFromLocation(in, uri);
-            UriLocation = locations[in];
-            if (locations[in].GetPath() == "/cgi")
+            if (fillFromLocation(in, uri) && locations[in].GetPath() == "/cgi")
             {
                 Is_cgi = true;
             }
+            UriLocation = locations[in];
             
-        // }
     }
+    // cout<<"rootUri :"<<rootUri<<endl;
+    // cout<<"is_cgi :"<<Is_cgi<<endl;
+    // cout<<"querys :"<<querys<<endl;
+    // cout<<"      ========\n";
+    // cout<<"        ===\n";
+    // cout<<"         =\n";
+    // UriLocation.desplayLocation();
+    // cout<<"         =\n";
+    // cout<<"        ===\n";
+    // cout<<"      ========\n";
 }
 
 Servers::Servers()
